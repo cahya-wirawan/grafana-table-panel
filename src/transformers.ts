@@ -3,7 +3,7 @@ import flatten from './core/utils/flatten';
 import TimeSeries from './core/time_series2';
 import TableModel from './core/table_model';
 
-var transformers = {};
+let transformers = {};
 
 transformers['timeseries_to_rows'] = {
   description: 'Time series to rows',
@@ -13,10 +13,10 @@ transformers['timeseries_to_rows'] = {
   transform: function(data, panel, model) {
     model.columns = [{text: 'Time', type: 'date'}, {text: 'Metric'}, {text: 'Value'}];
 
-    for (var i = 0; i < data.length; i++) {
-      var series = data[i];
-      for (var y = 0; y < series.datapoints.length; y++) {
-        var dp = series.datapoints[y];
+    for (let i = 0; i < data.length; i++) {
+      let series = data[i];
+      for (let y = 0; y < series.datapoints.length; y++) {
+        let dp = series.datapoints[y];
         model.rows.push([dp[1], series.target, dp[0]]);
       }
     }
@@ -32,15 +32,15 @@ transformers['timeseries_to_columns'] = {
     model.columns.push({text: 'Time', type: 'date'});
 
     // group by time
-    var points = {};
+    let points = {};
 
     for (let i = 0; i < data.length; i++) {
-      var series = data[i];
+      let series = data[i];
       model.columns.push({text: series.target});
 
-      for (var y = 0; y < series.datapoints.length; y++) {
-        var dp = series.datapoints[y];
-        var timeKey = dp[1].toString();
+      for (let y = 0; y < series.datapoints.length; y++) {
+        let dp = series.datapoints[y];
+        let timeKey = dp[1].toString();
 
         if (!points[timeKey]) {
           points[timeKey] = {time: dp[1]};
@@ -51,12 +51,12 @@ transformers['timeseries_to_columns'] = {
       }
     }
 
-    for (var time in points) {
-      var point = points[time];
-      var values = [point.time];
+    for (let time in points) {
+      let point = points[time];
+      let values = [point.time];
 
       for (let i = 0; i < data.length; i++) {
-        var value = point[i];
+        let value = point[i];
         values.push(value);
       }
 
@@ -78,7 +78,7 @@ transformers['timeseries_aggregations'] = {
     ];
   },
   transform: function(data, panel, model) {
-    var i, y;
+    let i, y;
     model.columns.push({text: 'Metric'});
 
     for (i = 0; i < panel.columns.length; i++) {
@@ -86,13 +86,13 @@ transformers['timeseries_aggregations'] = {
     }
 
     for (i = 0; i < data.length; i++) {
-      var series = new TimeSeries({
+      let series = new TimeSeries({
         datapoints: data[i].datapoints,
         alias: data[i].target,
       });
 
       series.getFlotPairs('connected');
-      var cells = [series.alias];
+      let cells = [series.alias];
 
       for (y = 0; y < panel.columns.length; y++) {
         cells.push(series.stats[panel.columns[y].value]);
@@ -118,8 +118,8 @@ transformers['annotations'] = {
       return;
     }
 
-    for (var i = 0; i < data.annotations.length; i++) {
-      var evt = data.annotations[i];
+    for (let i = 0; i < data.annotations.length; i++) {
+      let evt = data.annotations[i];
       model.rows.push([evt.time, evt.title, evt.text, evt.tags]);
     }
   },
@@ -281,19 +281,19 @@ transformers['json'] = {
       return [];
     }
 
-    var names: any = {};
-    for (var i = 0; i < data.length; i++) {
-      var series = data[i];
+    let names: any = {};
+    for (let i = 0; i < data.length; i++) {
+      let series = data[i];
       if (series.type !== 'docs') {
         continue;
       }
 
       // only look at 100 docs
-      var maxDocs = Math.min(series.datapoints.length, 100);
-      for (var y = 0; y < maxDocs; y++) {
-        var doc = series.datapoints[y];
-        var flattened = flatten(doc, null);
-        for (var propName in flattened) {
+      let maxDocs = Math.min(series.datapoints.length, 100);
+      for (let y = 0; y < maxDocs; y++) {
+        let doc = series.datapoints[y];
+        let flattened = flatten(doc, null);
+        for (let propName in flattened) {
           names[propName] = true;
         }
       }
@@ -304,10 +304,10 @@ transformers['json'] = {
     });
   },
   transform: function(data, panel, model) {
-    var i, y, z;
+    let i, y, z;
 
     for (let column of panel.columns) {
-      var tableCol: any = {text: column.text};
+      let tableCol: any = {text: column.text};
 
       // if filterable data then set columns to filterable
       if (data.length > 0 && data[0].filterable) {
@@ -322,14 +322,14 @@ transformers['json'] = {
     }
 
     for (i = 0; i < data.length; i++) {
-      var series = data[i];
+      let series = data[i];
 
       for (y = 0; y < series.datapoints.length; y++) {
-        var dp = series.datapoints[y];
-        var values = [];
+        let dp = series.datapoints[y];
+        let values = [];
 
         if (_.isObject(dp) && panel.columns.length > 0) {
-          var flattened = flatten(dp, null);
+          let flattened = flatten(dp, null);
           for (z = 0; z < panel.columns.length; z++) {
             values.push(flattened[panel.columns[z].value]);
           }
@@ -441,13 +441,13 @@ transformers['parsing_decoder'] = {
 };
 
 function transformDataToTable(data, panel) {
-  var model = new TableModel();
+  let model = new TableModel();
 
   if (!data || data.length === 0) {
     return model;
   }
 
-  var transformer = transformers[panel.transform];
+  let transformer = transformers[panel.transform];
   if (!transformer) {
     throw {message: 'Transformer ' + panel.transform + ' not found'};
   }
