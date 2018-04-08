@@ -1,25 +1,19 @@
 {
-  "name": "natel-discrete-panel",
-  "version": "0.0.9",
-  "description": "Discrete Events in Grafana",
+  "name": "grafana-tablr-panel",
+  "version": "5.0.1",
+  "description": "Table in Grafana",
   "scripts": {
     "build": "grunt",
     "test": "./node_modules/karma/bin/karma start",
     "precommit": "pretty-quick --staged",
     "pretty": "prettier --write src/**/*.ts"
   },
-  "author": "ryantxu",
+  "author": "grafana",
   "license": "MIT",
-  "keywords": [
-    "discrete",
-    "canvas",
-    "grafana",
-    "plugin",
-    "panel"
-  ],
+  "keywords": ["table", "grafana", "plugin", "panel"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/cahya-wirawan/grafana-discrete-panel.git"
+    "url": "https://github.com/cahya-wirawan/grafana-table-panel.git"
   },
   "prettier": {
     "singleQuote": true,
@@ -36,7 +30,7 @@
     "systemjs": "^0.19.47"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.74",
+    "@types/lodash": "^4.14.106",
     "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
     "grunt": "^1.0.2",
     "grunt-contrib-clean": "^1.1.0",
@@ -45,6 +39,7 @@
     "grunt-string-replace": "^1.3",
     "grunt-typescript": "^0.8.0",
     "husky": "^0.14.3",
+    "jquery": "^3.3.1",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-expect": "^1.1.3",

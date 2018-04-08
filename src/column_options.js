@@ -1,29 +1,16 @@
-import _ from 'lodash';
-import $ from 'jquery';
-import kbn from 'app/core/utils/kbn';
-
-export class ColumnOptionsCtrl {
-  panel: any;
-  panelCtrl: any;
-  colorModes: any;
-  columnStyles: any;
-  columnTypes: any;
-  fontSizes: any;
-  dateFormats: any;
-  addColumnSegment: any;
-  unitFormats: any;
-  getColumnNames: any;
-  activeStyleIndex: number;
-  mappingTypes: any;
-
+'use strict';
+Object.defineProperty(exports, '__esModule', {value: true});
+var lodash_1 = require('lodash');
+var kbn_1 = require('app/core/utils/kbn');
+var ColumnOptionsCtrl = /** @class */ (function() {
   /** @ngInject */
-  constructor($scope) {
+  function ColumnOptionsCtrl($scope) {
+    var _this = this;
     $scope.editor = this;
-
     this.activeStyleIndex = 0;
     this.panelCtrl = $scope.ctrl;
     this.panel = this.panelCtrl.panel;
-    this.unitFormats = kbn.getUnitFormats();
+    this.unitFormats = kbn_1.default.getUnitFormats();
     this.colorModes = [
       {text: 'Disabled', value: null},
       {text: 'Cell', value: 'cell'},
@@ -60,29 +47,24 @@ export class ColumnOptionsCtrl {
       {text: 'Value to text', value: 1},
       {text: 'Range to text', value: 2},
     ];
-
-    this.getColumnNames = () => {
-      if (!this.panelCtrl.table) {
+    this.getColumnNames = function() {
+      if (!_this.panelCtrl.table) {
         return [];
       }
-      return _.map(this.panelCtrl.table.columns, function(col: any) {
+      return lodash_1.default.map(_this.panelCtrl.table.columns, function(col) {
         return col.text;
       });
     };
-
     this.onColorChange = this.onColorChange.bind(this);
   }
-
-  render() {
+  ColumnOptionsCtrl.prototype.render = function() {
     this.panelCtrl.render();
-  }
-
-  setUnitFormat(column, subItem) {
+  };
+  ColumnOptionsCtrl.prototype.setUnitFormat = function(column, subItem) {
     column.unit = subItem.value;
     this.panelCtrl.render();
-  }
-
-  addColumnStyle() {
+  };
+  ColumnOptionsCtrl.prototype.addColumnStyle = function() {
     var newStyleRule = {
       unit: 'short',
       type: 'number',
@@ -99,11 +81,9 @@ export class ColumnOptionsCtrl {
       thresholds: [],
       mappingType: 1,
     };
-
     var styles = this.panel.styles;
     var stylesCount = styles.length;
     var indexToInsert = stylesCount;
-
     // check if last is a catch all rule, then add it before that one
     if (stylesCount > 0) {
       var last = styles[stylesCount - 1];
@@ -111,59 +91,53 @@ export class ColumnOptionsCtrl {
         indexToInsert = stylesCount - 1;
       }
     }
-
     styles.splice(indexToInsert, 0, newStyleRule);
     this.activeStyleIndex = indexToInsert;
-  }
-
-  removeColumnStyle(style) {
-    this.panel.styles = _.without(this.panel.styles, style);
-  }
-
-  invertColorOrder(index) {
+  };
+  ColumnOptionsCtrl.prototype.removeColumnStyle = function(style) {
+    this.panel.styles = lodash_1.default.without(this.panel.styles, style);
+  };
+  ColumnOptionsCtrl.prototype.invertColorOrder = function(index) {
     var ref = this.panel.styles[index].colors;
     var copy = ref[0];
     ref[0] = ref[2];
     ref[2] = copy;
     this.panelCtrl.render();
-  }
-
-  onColorChange(styleIndex, colorIndex) {
-    return newColor => {
-      this.panel.styles[styleIndex].colors[colorIndex] = newColor;
-      this.render();
+  };
+  ColumnOptionsCtrl.prototype.onColorChange = function(styleIndex, colorIndex) {
+    var _this = this;
+    return function(newColor) {
+      _this.panel.styles[styleIndex].colors[colorIndex] = newColor;
+      _this.render();
     };
-  }
-
-  addValueMap(style) {
+  };
+  ColumnOptionsCtrl.prototype.addValueMap = function(style) {
     if (!style.valueMaps) {
       style.valueMaps = [];
     }
     style.valueMaps.push({value: '', text: ''});
     this.panelCtrl.render();
-  }
-
-  removeValueMap(style, index) {
+  };
+  ColumnOptionsCtrl.prototype.removeValueMap = function(style, index) {
     style.valueMaps.splice(index, 1);
     this.panelCtrl.render();
-  }
-
-  addRangeMap(style) {
+  };
+  ColumnOptionsCtrl.prototype.addRangeMap = function(style) {
     if (!style.rangeMaps) {
       style.rangeMaps = [];
     }
     style.rangeMaps.push({from: '', to: '', text: ''});
     this.panelCtrl.render();
-  }
-
-  removeRangeMap(style, index) {
+  };
+  ColumnOptionsCtrl.prototype.removeRangeMap = function(style, index) {
     style.rangeMaps.splice(index, 1);
     this.panelCtrl.render();
-  }
-}
-
+  };
+  return ColumnOptionsCtrl;
+})();
+exports.ColumnOptionsCtrl = ColumnOptionsCtrl;
 /** @ngInject */
-export function columnOptionsTab($q, uiSegmentSrv) {
+function columnOptionsTab($q, uiSegmentSrv) {
   'use strict';
   return {
     restrict: 'E',
@@ -172,3 +146,4 @@ export function columnOptionsTab($q, uiSegmentSrv) {
     controller: ColumnOptionsCtrl,
   };
 }
+exports.columnOptionsTab = columnOptionsTab;
