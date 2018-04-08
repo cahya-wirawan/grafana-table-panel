@@ -11,7 +11,7 @@ transformers['timeseries_to_rows'] = {
     return [];
   },
   transform: function(data, panel, model) {
-    model.columns = [{ text: 'Time', type: 'date' }, { text: 'Metric' }, { text: 'Value' }];
+    model.columns = [{text: 'Time', type: 'date'}, {text: 'Metric'}, {text: 'Value'}];
 
     for (var i = 0; i < data.length; i++) {
       var series = data[i];
@@ -29,21 +29,21 @@ transformers['timeseries_to_columns'] = {
     return [];
   },
   transform: function(data, panel, model) {
-    model.columns.push({ text: 'Time', type: 'date' });
+    model.columns.push({text: 'Time', type: 'date'});
 
     // group by time
     var points = {};
 
     for (let i = 0; i < data.length; i++) {
       var series = data[i];
-      model.columns.push({ text: series.target });
+      model.columns.push({text: series.target});
 
       for (var y = 0; y < series.datapoints.length; y++) {
         var dp = series.datapoints[y];
         var timeKey = dp[1].toString();
 
         if (!points[timeKey]) {
-          points[timeKey] = { time: dp[1] };
+          points[timeKey] = {time: dp[1]};
           points[timeKey][i] = dp[0];
         } else {
           points[timeKey][i] = dp[0];
@@ -69,20 +69,20 @@ transformers['timeseries_aggregations'] = {
   description: 'Time series aggregations',
   getColumns: function() {
     return [
-      { text: 'Avg', value: 'avg' },
-      { text: 'Min', value: 'min' },
-      { text: 'Max', value: 'max' },
-      { text: 'Total', value: 'total' },
-      { text: 'Current', value: 'current' },
-      { text: 'Count', value: 'count' },
+      {text: 'Avg', value: 'avg'},
+      {text: 'Min', value: 'min'},
+      {text: 'Max', value: 'max'},
+      {text: 'Total', value: 'total'},
+      {text: 'Current', value: 'current'},
+      {text: 'Count', value: 'count'},
     ];
   },
   transform: function(data, panel, model) {
     var i, y;
-    model.columns.push({ text: 'Metric' });
+    model.columns.push({text: 'Metric'});
 
     for (i = 0; i < panel.columns.length; i++) {
-      model.columns.push({ text: panel.columns[i].text });
+      model.columns.push({text: panel.columns[i].text});
     }
 
     for (i = 0; i < data.length; i++) {
@@ -109,10 +109,10 @@ transformers['annotations'] = {
     return [];
   },
   transform: function(data, panel, model) {
-    model.columns.push({ text: 'Time', type: 'date' });
-    model.columns.push({ text: 'Title' });
-    model.columns.push({ text: 'Text' });
-    model.columns.push({ text: 'Tags' });
+    model.columns.push({text: 'Time', type: 'date'});
+    model.columns.push({text: 'Title'});
+    model.columns.push({text: 'Text'});
+    model.columns.push({text: 'Tags'});
 
     if (!data || !data.annotations || data.annotations.length === 0) {
       return;
@@ -143,7 +143,7 @@ transformers['table'] = {
     // Union of all columns
     const columns = data.reduce((acc, series) => {
       series.columns.forEach(col => {
-        const { text } = col;
+        const {text} = col;
         if (columnNames[text] === undefined) {
           columnNames[text] = acc.length;
           acc.push(col);
@@ -181,7 +181,7 @@ transformers['table'] = {
     // Union of all non-value columns
     const columnsUnion = data.reduce((acc, series) => {
       series.columns.forEach(col => {
-        const { text } = col;
+        const {text} = col;
         if (columnNames[text] === undefined) {
           columnNames[text] = acc.length;
           acc.push(col);
@@ -193,7 +193,9 @@ transformers['table'] = {
     // Map old column index to union index per series, e.g.,
     // given columnNames {A: 0, B: 1} and
     // data [{columns: [{ text: 'A' }]}, {columns: [{ text: 'B' }]}] => [[0], [1]]
-    const columnIndexMapper = data.map(series => series.columns.map(col => columnNames[col.text]));
+    const columnIndexMapper = data.map(series =>
+      series.columns.map(col => columnNames[col.text])
+    );
 
     // Flatten rows of all series and adjust new column indexes
     const flattenedRows = data.reduce((acc, series, seriesIndex) => {
@@ -218,7 +220,10 @@ transformers['table'] = {
           if (row[columnIndex] !== otherRow[columnIndex]) {
             return false;
           }
-        } else if (row[columnIndex] === undefined || otherRow[columnIndex] === undefined) {
+        } else if (
+          row[columnIndex] === undefined ||
+          otherRow[columnIndex] === undefined
+        ) {
           foundFieldToMatch = true;
         }
       }
@@ -234,12 +239,19 @@ transformers['table'] = {
         // More than one row can be merged into current row
         while (offset < flattenedRows.length) {
           // Find next row that could be merged
-          const match = _.findIndex(flattenedRows, otherRow => areRowsMatching(columnsUnion, row, otherRow), offset);
+          const match = _.findIndex(
+            flattenedRows,
+            otherRow => areRowsMatching(columnsUnion, row, otherRow),
+            offset
+          );
           if (match > -1) {
             const matchedRow = flattenedRows[match];
             // Merge values from match into current row if there is a gap in the current row
             for (let columnIndex = 0; columnIndex < columnsUnion.length; columnIndex++) {
-              if (row[columnIndex] === undefined && matchedRow[columnIndex] !== undefined) {
+              if (
+                row[columnIndex] === undefined &&
+                matchedRow[columnIndex] !== undefined
+              ) {
                 row[columnIndex] = matchedRow[columnIndex];
               }
             }
@@ -288,14 +300,14 @@ transformers['json'] = {
     }
 
     return _.map(names, function(value, key) {
-      return { text: key, value: key };
+      return {text: key, value: key};
     });
   },
   transform: function(data, panel, model) {
     var i, y, z;
 
     for (let column of panel.columns) {
-      var tableCol: any = { text: column.text };
+      var tableCol: any = {text: column.text};
 
       // if filterable data then set columns to filterable
       if (data.length > 0 && data[0].filterable) {
@@ -306,7 +318,7 @@ transformers['json'] = {
     }
 
     if (model.columns.length === 0) {
-      model.columns.push({ text: 'JSON' });
+      model.columns.push({text: 'JSON'});
     }
 
     for (i = 0; i < data.length; i++) {
@@ -331,6 +343,103 @@ transformers['json'] = {
   },
 };
 
+transformers['parsing_decoder'] = {
+  channelParsingCode: [
+    'Invalid packet length',
+    'End of data frame reached',
+    'Time stamp specifies future time',
+    'Invalid number of samples',
+    'Invalid authentication switch',
+    'Invalid compression switch',
+    'Trailing bytes in DFF subframe',
+    'Invalid calibration period',
+    'Invalid authentication offset',
+    'Invalid option switch',
+    'Invalid status size',
+    'Invalid channel data size',
+    'Steim compression not supported',
+    'Channel not signed',
+    'Invalid channel signature',
+    'No certificate found for channel',
+    'Invalid Candian compressed data',
+    'Unsupported data type',
+    'Unexpected signature verification error',
+    'Invalid channel time stamp',
+    'Invalid calibration factor',
+    'Channel start time not within one sample',
+    'Invalid site or channel name',
+  ],
+
+  frameParsingCode: [
+    'Internal error',
+    'Invalid channel(s) in frame',
+    'Invalid data frame size',
+    'Nominal time specifies future time',
+    'Invalid description size',
+    'Invalid max. DF size',
+    'Invalid channel number',
+    'Invalid DFF frame size',
+    'Invalid CRC',
+    'Frame has channel warning(s)',
+    'Invalid frame size',
+    'Frame too large',
+    'Protocol violation',
+    'Frame not signed',
+    'Invalid signature',
+    'No certificate found',
+    'Unsupported frame type (yet)',
+    'No certificates loaded',
+    'Channel authentication failed',
+    'Unknown frame type',
+    'Frame not (complete) parsed',
+    'Invalid alert type',
+    'Invalid station name',
+    'Invalid command size',
+    'Frame has channel error(s)',
+    'Station is not allowed to send commands',
+    'Invalid channel string size',
+    'Invalid frame time length',
+    'Command frame too old',
+  ],
+
+  description: 'Frame and channel parsing decoder',
+  getColumns: function() {
+    return [];
+  },
+  transform: function(data, panel, model) {
+    console.log(this.channelParsingCode);
+
+    model.columns = [{text: 'No.'}];
+    let decodedStrings = [];
+    for (let i = 0; i < data.length; i++) {
+      model.columns.push({text: data[i].target});
+      let series = data[i];
+      let code = 0;
+      for (let y = 0; y < series.datapoints.length; y++) {
+        let dp = series.datapoints[y];
+        if (dp[0] !== null) code = code | dp[0];
+      }
+      let decodedString = [];
+      let bitPosition = 1;
+      for (let j = 0; j < this.frameParsingCode.length; j++) {
+        let parsedCode = code & (bitPosition << j);
+        if (parsedCode != 0) {
+          decodedString.push(this.frameParsingCode[j]);
+        }
+      }
+      decodedStrings.push(decodedString);
+    }
+    for (let i = 0; i < this.frameParsingCode.length; i++) {
+      let row = [i];
+      for (let j = 0; j < decodedStrings.length; j++) {
+        if (typeof decodedStrings[j][i] !== 'undefined') row.push(decodedStrings[j][i]);
+      }
+      if (row.length == 1) break;
+      model.rows.push(row);
+    }
+  },
+};
+
 function transformDataToTable(data, panel) {
   var model = new TableModel();
 
@@ -340,11 +449,11 @@ function transformDataToTable(data, panel) {
 
   var transformer = transformers[panel.transform];
   if (!transformer) {
-    throw { message: 'Transformer ' + panel.transform + ' not found' };
+    throw {message: 'Transformer ' + panel.transform + ' not found'};
   }
 
   transformer.transform(data, panel, model);
   return model;
 }
 
-export { transformers, transformDataToTable };
+export {transformers, transformDataToTable};
