@@ -7,7 +7,7 @@ System.register(['lodash', './transformers'], function(exports_1) {
     return {
       restrict: 'E',
       scope: true,
-      templateUrl: 'public/app/plugins/panel/table/editor.html',
+      templateUrl: 'public/plugins/grafana-table-panel/partials/editor.html',
       controller: TablePanelEditorCtrl,
     };
   }

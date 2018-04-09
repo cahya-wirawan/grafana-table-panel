@@ -93,6 +93,7 @@ System.register(
               scroll: true,
               fontSize: '100%',
               sort: {col: 0, desc: true},
+              parsingCodeType: 'frame',
             };
             this.pageIndex = 0;
             if (this.panel.styles === void 0) {

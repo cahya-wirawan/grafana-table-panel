@@ -345,68 +345,70 @@ System.register(
           },
         };
         transformers['parsing_decoder'] = {
-          channelParsingCode: [
-            'Invalid packet length',
-            'End of data frame reached',
-            'Time stamp specifies future time',
-            'Invalid number of samples',
-            'Invalid authentication switch',
-            'Invalid compression switch',
-            'Trailing bytes in DFF subframe',
-            'Invalid calibration period',
-            'Invalid authentication offset',
-            'Invalid option switch',
-            'Invalid status size',
-            'Invalid channel data size',
-            'Steim compression not supported',
-            'Channel not signed',
-            'Invalid channel signature',
-            'No certificate found for channel',
-            'Invalid Candian compressed data',
-            'Unsupported data type',
-            'Unexpected signature verification error',
-            'Invalid channel time stamp',
-            'Invalid calibration factor',
-            'Channel start time not within one sample',
-            'Invalid site or channel name',
-          ],
-          frameParsingCode: [
-            'Internal error',
-            'Invalid channel(s) in frame',
-            'Invalid data frame size',
-            'Nominal time specifies future time',
-            'Invalid description size',
-            'Invalid max. DF size',
-            'Invalid channel number',
-            'Invalid DFF frame size',
-            'Invalid CRC',
-            'Frame has channel warning(s)',
-            'Invalid frame size',
-            'Frame too large',
-            'Protocol violation',
-            'Frame not signed',
-            'Invalid signature',
-            'No certificate found',
-            'Unsupported frame type (yet)',
-            'No certificates loaded',
-            'Channel authentication failed',
-            'Unknown frame type',
-            'Frame not (complete) parsed',
-            'Invalid alert type',
-            'Invalid station name',
-            'Invalid command size',
-            'Frame has channel error(s)',
-            'Station is not allowed to send commands',
-            'Invalid channel string size',
-            'Invalid frame time length',
-            'Command frame too old',
-          ],
+          parsingCodes: {
+            channel: [
+              'Invalid packet length',
+              'End of data frame reached',
+              'Time stamp specifies future time',
+              'Invalid number of samples',
+              'Invalid authentication switch',
+              'Invalid compression switch',
+              'Trailing bytes in DFF subframe',
+              'Invalid calibration period',
+              'Invalid authentication offset',
+              'Invalid option switch',
+              'Invalid status size',
+              'Invalid channel data size',
+              'Steim compression not supported',
+              'Channel not signed',
+              'Invalid channel signature',
+              'No certificate found for channel',
+              'Invalid Candian compressed data',
+              'Unsupported data type',
+              'Unexpected signature verification error',
+              'Invalid channel time stamp',
+              'Invalid calibration factor',
+              'Channel start time not within one sample',
+              'Invalid site or channel name',
+            ],
+            frame: [
+              'Internal error',
+              'Invalid channel(s) in frame',
+              'Invalid data frame size',
+              'Nominal time specifies future time',
+              'Invalid description size',
+              'Invalid max. DF size',
+              'Invalid channel number',
+              'Invalid DFF frame size',
+              'Invalid CRC',
+              'Frame has channel warning(s)',
+              'Invalid frame size',
+              'Frame too large',
+              'Protocol violation',
+              'Frame not signed',
+              'Invalid signature',
+              'No certificate found',
+              'Unsupported frame type (yet)',
+              'No certificates loaded',
+              'Channel authentication failed',
+              'Unknown frame type',
+              'Frame not (complete) parsed',
+              'Invalid alert type',
+              'Invalid station name',
+              'Invalid command size',
+              'Frame has channel error(s)',
+              'Station is not allowed to send commands',
+              'Invalid channel string size',
+              'Invalid frame time length',
+              'Command frame too old',
+            ],
+          },
           description: 'Frame and channel parsing decoder',
           getColumns: function() {
             return [];
           },
           transform: function(data, panel, model) {
-            console.log(this.channelParsingCode);
+            var parsingCode = this.parsingCodes[panel.parsingCodeType];
             model.columns = [{text: 'No.'}];
             var decodedStrings = [];
             for (var i = 0; i < data.length; i++) {
@@ -419,15 +421,15 @@ System.register(
               }
               var decodedString = [];
               var bitPosition = 1;
-              for (var j = 0; j < this.frameParsingCode.length; j++) {
+              for (var j = 0; j < parsingCode.length; j++) {
                 var parsedCode = code & (bitPosition << j);
                 if (parsedCode != 0) {
-                  decodedString.push(this.frameParsingCode[j]);
+                  decodedString.push(parsingCode[j]);
                 }
               }
               decodedStrings.push(decodedString);
             }
-            for (var i = 0; i < this.frameParsingCode.length; i++) {
+            for (var i = 0; i < parsingCode.length; i++) {
               var row = [i];
               for (var j = 0; j < decodedStrings.length; j++) {
                 if (typeof decodedStrings[j][i] !== 'undefined')

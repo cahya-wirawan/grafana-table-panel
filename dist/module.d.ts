@@ -38,6 +38,7 @@ declare class TablePanelCtrl extends MetricsPanelCtrl {
       col: number;
       desc: boolean;
     };
+    parsingCodeType: string;
   };
   /** @ngInject */
   constructor(
