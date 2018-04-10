@@ -409,33 +409,27 @@ transformers['parsing_decoder'] = {
   },
   transform: function(data, panel, model) {
     let parsingCode = this.parsingCodes[panel.parsingCodeType];
-    model.columns = [{text: 'No.'}];
-    let decodedStrings = [];
-    for (let i = 0; i < data.length; i++) {
-      model.columns.push({text: data[i].target});
-      let series = data[i];
-      let code = 0;
-      for (let y = 0; y < series.datapoints.length; y++) {
-        let dp = series.datapoints[y];
-        if (dp[0] !== null) code = code | dp[0];
+    model.columns = [{text: 'Station'}, {text: 'Error Message'}];
+    let codeByStation = {};
+
+    for (let i = 0; i < data[0].datapoints.length; i++) {
+      if (data[1].datapoints[i][0] == null) continue;
+      if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
+        codeByStation[data[0].datapoints[i][0]] = parseInt(data[1].datapoints[i][0], 16);
+      } else {
+        codeByStation[data[0].datapoints[i][0]] |= parseInt(data[1].datapoints[i][0], 16);
       }
+    }
+    let stations = Object.keys(codeByStation).sort();
+    for (let i in stations) {
       let decodedString = [];
       let bitPosition = 1;
       for (let j = 0; j < parsingCode.length; j++) {
-        let parsedCode = code & (bitPosition << j);
+        let parsedCode = codeByStation[stations[i]] & (bitPosition << j);
         if (parsedCode != 0) {
-          decodedString.push(parsingCode[j]);
+          model.rows.push([stations[i], parsingCode[j]]);
         }
       }
-      decodedStrings.push(decodedString);
-    }
-    for (let i = 0; i < parsingCode.length; i++) {
-      let row = [i];
-      for (let j = 0; j < decodedStrings.length; j++) {
-        if (typeof decodedStrings[j][i] !== 'undefined') row.push(decodedStrings[j][i]);
-      }
-      if (row.length == 1) break;
-      model.rows.push(row);
     }
   },
 };

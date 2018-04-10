@@ -409,34 +409,32 @@ System.register(
           },
           transform: function(data, panel, model) {
             var parsingCode = this.parsingCodes[panel.parsingCodeType];
-            model.columns = [{text: 'No.'}];
-            var decodedStrings = [];
-            for (var i = 0; i < data.length; i++) {
-              model.columns.push({text: data[i].target});
-              var series = data[i];
-              var code = 0;
-              for (var y = 0; y < series.datapoints.length; y++) {
-                var dp = series.datapoints[y];
-                if (dp[0] !== null) code = code | dp[0];
+            model.columns = [{text: 'Station'}, {text: 'Error Message'}];
+            var codeByStation = {};
+            for (var i = 0; i < data[0].datapoints.length; i++) {
+              if (data[1].datapoints[i][0] == null) continue;
+              if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
+                codeByStation[data[0].datapoints[i][0]] = parseInt(
+                  data[1].datapoints[i][0],
+                  16
+                );
+              } else {
+                codeByStation[data[0].datapoints[i][0]] |= parseInt(
+                  data[1].datapoints[i][0],
+                  16
+                );
               }
+            }
+            var stations = Object.keys(codeByStation).sort();
+            for (var i in stations) {
               var decodedString = [];
               var bitPosition = 1;
               for (var j = 0; j < parsingCode.length; j++) {
-                var parsedCode = code & (bitPosition << j);
+                var parsedCode = codeByStation[stations[i]] & (bitPosition << j);
                 if (parsedCode != 0) {
-                  decodedString.push(parsingCode[j]);
+                  model.rows.push([stations[i], parsingCode[j]]);
                 }
               }
-              decodedStrings.push(decodedString);
-            }
-            for (var i = 0; i < parsingCode.length; i++) {
-              var row = [i];
-              for (var j = 0; j < decodedStrings.length; j++) {
-                if (typeof decodedStrings[j][i] !== 'undefined')
-                  row.push(decodedStrings[j][i]);
-              }
-              if (row.length == 1) break;
-              model.rows.push(row);
             }
           },
         };
