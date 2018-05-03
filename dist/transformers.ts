@@ -415,9 +415,9 @@ transformers['parsing_decoder'] = {
     for (let i = 0; i < data[0].datapoints.length; i++) {
       if (data[1].datapoints[i][0] == null) continue;
       if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
-        codeByStation[data[0].datapoints[i][0]] = parseInt(data[1].datapoints[i][0], 16);
+        codeByStation[data[0].datapoints[i][0]] = parseInt(data[1].datapoints[i][0], 10);
       } else {
-        codeByStation[data[0].datapoints[i][0]] |= parseInt(data[1].datapoints[i][0], 16);
+        codeByStation[data[0].datapoints[i][0]] |= parseInt(data[1].datapoints[i][0], 10);
       }
     }
     let stations = Object.keys(codeByStation).sort();

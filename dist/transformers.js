@@ -416,12 +416,12 @@ System.register(
               if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
                 codeByStation[data[0].datapoints[i][0]] = parseInt(
                   data[1].datapoints[i][0],
-                  16
+                  10
                 );
               } else {
                 codeByStation[data[0].datapoints[i][0]] |= parseInt(
                   data[1].datapoints[i][0],
-                  16
+                  10
                 );
               }
             }
