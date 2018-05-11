@@ -75,6 +75,7 @@ var TablePanelCtrl = /** @class */ (function(_super) {
       scroll: true,
       fontSize: '100%',
       sort: {col: 0, desc: true},
+      parsingCodeType: 'frame',
     };
     _this.pageIndex = 0;
     if (_this.panel.styles === void 0) {

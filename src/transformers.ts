@@ -434,6 +434,59 @@ transformers['parsing_decoder'] = {
   },
 };
 
+transformers['qualityflags_decoder'] = {
+  parsingCodes: {
+    qualityflags: [
+      'Constant data detected',
+      'No input from sensor detected',
+      'Data not checked',
+      'Data arrived too late',
+      'Data authentication failed',
+      'Data not authenticated',
+      'No cert for data found',
+      'Data not signed',
+      'Frame authentication failed',
+      'Frame not authenticated',
+      'No cert for frame found',
+      'Frame not signed',
+      'Frame authentication N/A',
+      'Frame authentication N/A',
+      'Frame authentication N/A',
+      'Frame authentication N/A',
+    ],
+  },
+
+  description: 'Qualityflags decoder',
+  getColumns: function() {
+    return [];
+  },
+  transform: function(data, panel, model) {
+    let parsingCode = this.parsingCodes[panel.parsingCodeType];
+    model.columns = [{text: 'Station'}, {text: 'Error Message'}];
+    let codeByStation = {};
+
+    for (let i = 0; i < data[0].datapoints.length; i++) {
+      if (data[1].datapoints[i][0] == null) continue;
+      if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
+        codeByStation[data[0].datapoints[i][0]] = parseInt(data[1].datapoints[i][0], 10);
+      } else {
+        codeByStation[data[0].datapoints[i][0]] |= parseInt(data[1].datapoints[i][0], 10);
+      }
+    }
+    let stations = Object.keys(codeByStation).sort();
+    for (let i in stations) {
+      let decodedString = [];
+      let bitPosition = 1;
+      for (let j = 0; j < parsingCode.length; j++) {
+        let parsedCode = codeByStation[stations[i]] & (bitPosition << j);
+        if (parsedCode != 0) {
+          model.rows.push([stations[i], parsingCode[j]]);
+        }
+      }
+    }
+  },
+};
+
 function transformDataToTable(data, panel) {
   let model = new TableModel();
 
