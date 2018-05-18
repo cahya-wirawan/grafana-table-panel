@@ -441,10 +441,10 @@ transformers['qualityflags_decoder'] = {
       'No input from sensor detected',
       'Data not checked',
       'Data arrived too late',
-      'Data authentication failed',
+      'Data authentication failed', //'Invalid channel signature'
       'Data not authenticated',
       'No cert for data found',
-      'Data not signed',
+      'Data not signed', //'Channel not signed'
       'Frame authentication failed',
       'Frame not authenticated',
       'No cert for frame found',
