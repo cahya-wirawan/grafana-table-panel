@@ -487,6 +487,7 @@ transformers['qualityflags_decoder'] = {
       let bitPosition = 1;
       for (let j = 0; j < parsingCode.length; j++) {
         let parsedCode = codeByStation[stations[i]] & (bitPosition << j);
+        parsedCode = parsedCode & 0xff0;
         if (parsedCode != 0) {
           let sta_chan = stations[i].split(':');
           model.rows.push([sta_chan[0], sta_chan[1], parsingCode[j]]);
