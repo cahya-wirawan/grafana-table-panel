@@ -94,6 +94,7 @@ System.register(
               fontSize: '100%',
               sort: {col: 0, desc: true},
               parsingCodeType: 'frame',
+              onlyRelatedAuthentication: true,
             };
             this.pageIndex = 0;
             if (this.panel.styles === void 0) {

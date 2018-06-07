@@ -37,6 +37,13 @@
                                   ng-options="f for f in ['frame','channel', 'qualityflags']" ng-blur="editor.render()"></select>
           </div>
 		</div>
+
+        <gf-form-switch class="gf-form"
+                        label="Display Only Related Authentication"
+                        label-class="gf-form-label width-21"
+                        checked="editor.panel.onlyRelatedAuthentication"
+                        on-change="editor.onConfigChanged()">
+        </gf-form-switch>
   </div>
 
 

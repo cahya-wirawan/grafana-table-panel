@@ -493,7 +493,7 @@ System.register(
               var bitPosition = 1;
               for (var j = 0; j < parsingCode.length; j++) {
                 var parsedCode = codeByStation[stations[i]] & (bitPosition << j);
-                parsedCode = parsedCode & 0xff0;
+                if (panel.onlyRelatedAuthentication) parsedCode = parsedCode & 0xff0;
                 if (parsedCode != 0) {
                   var sta_chan = stations[i].split(':');
                   model.rows.push([sta_chan[0], sta_chan[1], parsingCode[j]]);

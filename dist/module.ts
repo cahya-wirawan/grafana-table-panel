@@ -50,6 +50,7 @@ class TablePanelCtrl extends MetricsPanelCtrl {
     fontSize: '100%',
     sort: {col: 0, desc: true},
     parsingCodeType: 'frame',
+    onlyRelatedAuthentication: true,
   };
 
   /** @ngInject */
