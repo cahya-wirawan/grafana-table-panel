@@ -413,7 +413,7 @@ System.register(
             var codeByStation = {};
             for (var i = 0; i < data[0].datapoints.length; i++) {
               if (data[1].datapoints[i][0] == null) continue;
-              if (typeof codeByStation[data[0].datapoints[i]] !== 'undefined') {
+              if (typeof codeByStation[data[0].datapoints[i][0]] !== 'undefined') {
                 codeByStation[data[0].datapoints[i][0]] |= parseInt(
                   data[1].datapoints[i][0],
                   10
@@ -468,6 +468,7 @@ System.register(
             model.columns = [
               {text: 'Station'},
               {text: 'Channel'},
+              {text: 'Site'},
               {text: 'Error Message'},
             ];
             var codeByStation = {};
@@ -475,15 +476,27 @@ System.register(
               if (data[2].datapoints[i][0] == null) continue;
               if (
                 typeof codeByStation[
-                  data[0].datapoints[i][0] + ':' + data[1].datapoints[i][0]
+                  data[0].datapoints[i][0] +
+                    ':' +
+                    data[1].datapoints[i][0] +
+                    ':' +
+                    data[3].datapoints[i][0]
                 ] !== 'undefined'
               ) {
                 codeByStation[
-                  data[0].datapoints[i][0] + ':' + data[1].datapoints[i][0]
+                  data[0].datapoints[i][0] +
+                    ':' +
+                    data[1].datapoints[i][0] +
+                    ':' +
+                    data[3].datapoints[i][0]
                 ] |= parseInt(data[2].datapoints[i][0], 10);
               } else {
                 codeByStation[
-                  data[0].datapoints[i][0] + ':' + data[1].datapoints[i][0]
+                  data[0].datapoints[i][0] +
+                    ':' +
+                    data[1].datapoints[i][0] +
+                    ':' +
+                    data[3].datapoints[i][0]
                 ] = parseInt(data[2].datapoints[i][0], 10);
               }
             }
@@ -496,7 +509,12 @@ System.register(
                 if (panel.onlyRelatedAuthentication) parsedCode = parsedCode & 0xff0;
                 if (parsedCode != 0) {
                   var sta_chan = stations[i].split(':');
-                  model.rows.push([sta_chan[0], sta_chan[1], parsingCode[j]]);
+                  model.rows.push([
+                    sta_chan[0],
+                    sta_chan[1],
+                    sta_chan[2],
+                    parsingCode[j],
+                  ]);
                 }
               }
             }
