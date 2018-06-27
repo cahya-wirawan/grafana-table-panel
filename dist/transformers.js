@@ -438,6 +438,73 @@ System.register(
             }
           },
         };
+        transformers['channel_parsing_decoder'] = {
+          parsingCodes: {
+            channel: [
+              'Invalid packet length',
+              'End of data frame reached',
+              'Time stamp specifies future time',
+              'Invalid number of samples',
+              'Invalid authentication switch',
+              'Invalid compression switch',
+              'Trailing bytes in DFF subframe',
+              'Invalid calibration period',
+              'Invalid authentication offset',
+              'Invalid option switch',
+              'Invalid status size',
+              'Invalid channel data size',
+              'Steim compression not supported',
+              'Channel not signed',
+              'Invalid channel signature',
+              'No certificate found for channel',
+              'Invalid Candian compressed data',
+              'Unsupported data type',
+              'Unexpected signature verification error',
+              'Invalid channel time stamp',
+              'Invalid calibration factor',
+              'Channel start time not within one sample',
+              'Invalid site or channel name',
+            ],
+          },
+          description: 'Channel parsing decoder',
+          getColumns: function() {
+            return [];
+          },
+          transform: function(data, panel, model) {
+            var parsingCode = this.parsingCodes['channel'];
+            model.columns = [
+              {text: 'Station'},
+              {text: 'Site/Channel'},
+              {text: 'Error Message'},
+            ];
+            var codeByStation = {};
+            var rows = data[0]['rows'];
+            for (var i = 0; i < rows.length; i++) {
+              //if (data[2].datapoints[i][0] == null) continue;
+              if (typeof codeByStation[rows[i][1] + ':' + rows[i][2]] !== 'undefined') {
+                codeByStation[rows[i][1] + ':' + rows[i][2]] |= parseInt(rows[i][3], 10);
+              } else {
+                codeByStation[rows[i][1] + ':' + rows[i][2]] = parseInt(rows[i][3], 10);
+              }
+            }
+            var stations = Object.keys(codeByStation).sort();
+            for (var i in stations) {
+              var decodedString = [];
+              var bitPosition = 1;
+              for (var j = 0; j < parsingCode.length; j++) {
+                var parsedCode = codeByStation[stations[i]] & (bitPosition << j);
+                if (parsedCode != 0) {
+                  var sta_chan = stations[i].split(':');
+                  model.rows.push([
+                    sta_chan[0],
+                    sta_chan[1].replace(/(.+)\/$/, '$1'),
+                    parsingCode[j],
+                  ]);
+                }
+              }
+            }
+          },
+        };
         transformers['qualityflags_decoder'] = {
           parsingCodes: {
             qualityflags: [
@@ -467,8 +534,8 @@ System.register(
             var parsingCode = this.parsingCodes[panel.parsingCodeType];
             model.columns = [
               {text: 'Station'},
-              {text: 'Channel'},
               {text: 'Site'},
+              {text: 'Channel'},
               {text: 'Error Message'},
             ];
             var codeByStation = {};
@@ -480,7 +547,7 @@ System.register(
                     ':' +
                     data[1].datapoints[i][0] +
                     ':' +
-                    data[3].datapoints[i][0]
+                    data[2].datapoints[i][0]
                 ] !== 'undefined'
               ) {
                 codeByStation[
@@ -488,16 +555,16 @@ System.register(
                     ':' +
                     data[1].datapoints[i][0] +
                     ':' +
-                    data[3].datapoints[i][0]
-                ] |= parseInt(data[2].datapoints[i][0], 10);
+                    data[2].datapoints[i][0]
+                ] |= parseInt(data[3].datapoints[i][0], 10);
               } else {
                 codeByStation[
                   data[0].datapoints[i][0] +
                     ':' +
                     data[1].datapoints[i][0] +
                     ':' +
-                    data[3].datapoints[i][0]
-                ] = parseInt(data[2].datapoints[i][0], 10);
+                    data[2].datapoints[i][0]
+                ] = parseInt(data[3].datapoints[i][0], 10);
               }
             }
             var stations = Object.keys(codeByStation).sort();

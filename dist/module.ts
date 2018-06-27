@@ -121,7 +121,10 @@ class TablePanelCtrl extends MetricsPanelCtrl {
 
     // automatically correct transform mode based on data
     if (this.dataRaw && this.dataRaw.length) {
-      if (this.dataRaw[0].type === 'table') {
+      if (
+        this.dataRaw[0].type === 'table' &&
+        this.panel.transform != 'channel_parsing_decoder'
+      ) {
         this.panel.transform = 'table';
       } else {
         if (this.dataRaw[0].type === 'docs') {
